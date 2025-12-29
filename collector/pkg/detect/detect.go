@@ -84,7 +84,11 @@ func (d *Detect) SmartCtlInfo(device *models.Device) error {
 	device.RotationSpeed = availableDeviceInfo.RotationRate
 	device.Capacity = availableDeviceInfo.Capacity()
 	device.FormFactor = availableDeviceInfo.FormFactor.Name
-	device.DeviceType = availableDeviceInfo.Device.Type
+	// Only override DeviceType if it wasn't explicitly configured
+	// This preserves user-configured device types (e.g., cciss, megaraid) from collector.yaml
+	if len(device.DeviceType) == 0 {
+		device.DeviceType = availableDeviceInfo.Device.Type
+	}
 	device.DeviceProtocol = availableDeviceInfo.Device.Protocol
 	if len(availableDeviceInfo.Vendor) > 0 {
 		device.Manufacturer = availableDeviceInfo.Vendor
